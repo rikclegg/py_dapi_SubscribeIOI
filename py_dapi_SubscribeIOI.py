@@ -21,7 +21,7 @@ SUBSCRIPTION_TERMINATED         = blpapi.Name("SubscriptionTerminated")
 IOI_DATA                        = blpapi.Name("Ioidata")
 
 
-d_ioi = "//blp-test/ioisub-beta"
+d_ioi = "//blp/ioisub-beta"
 d_host = "localhost"
 d_port = 8194
 ioiSubscriptionID=blpapi.CorrelationId(1)
@@ -40,13 +40,15 @@ class SessionEventHandler():
         
         subscriptions.add(topic=ioiTopic,correlationId=ioiSubscriptionID)
 
-        print("Sending subscription...")
+        print("Sending subscription: " + ioiTopic)
+        
         session.subscribe(subscriptions)
 
     def processAdminEvent(self,event):  
         print("Processing ADMIN event")
 
         for msg in event:
+            print(msg)
             if msg.messageType() == SLOW_CONSUMER_WARNING:
                 print("Warning: Entered Slow Consumer status")
                 
@@ -54,13 +56,16 @@ class SessionEventHandler():
                 sys.stderr.write("Slow consumer status cleared")
                 
             else:
-                print(msg)
+                print("ADMIN MESSAGE: %s" % (msg))
 
 
     def processSessionStatusEvent(self,event,session):  
         print("Processing SESSION_STATUS event")
 
         for msg in event:
+            
+            print(msg)
+            
             if msg.messageType() == SESSION_STARTED:
                 print("Session started...")
                 session.openServiceAsync(d_ioi)
@@ -83,6 +88,8 @@ class SessionEventHandler():
         
         for msg in event:
             
+            print(msg)
+
             if msg.messageType() == SERVICE_OPENED:
                 
                 print("IOIAPI service opened... Sending request...")
@@ -98,6 +105,8 @@ class SessionEventHandler():
         
         for msg in event:
             
+            print("SUBSCRIPTION_STATUS MESSAGE: %s" % (msg))
+
             if msg.messageType() == SUBSCRIPTION_STARTED:
                 print("IOIAPI subscription started...")
                 
@@ -112,7 +121,7 @@ class SessionEventHandler():
         
         for msg in event:
             
-            #print (msg)
+            print (msg)
             
             if msg.messageType() == IOI_DATA:
 
